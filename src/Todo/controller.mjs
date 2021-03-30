@@ -13,12 +13,62 @@ export const getAll = async (req, res, next) => {
 };
 
 // [post] /todos/store
-export const create = async (req, res, next) => {
+export const create = (req, res, next) => {
     let todo = { ...req.body };
-    try {
-        await Todos.create(todo);
-    } catch (error) {
-        console.log('create new todo error: ', error);
-    }
-    console.log(todo);
+
+    Todos.create(todo)
+        .then((result) => {
+            res.json(result);
+        })
+        .catch((error) => console.log('create new todo error: ', error));
+};
+
+// [delete] /todos/:id
+export const deleted = (req, res, next) => {
+    let _id = req.params.id;
+    Todos.deleteById(_id)
+        .then((result) => {
+            res.json(result.ok);
+        })
+        .catch((error) => {
+            console.log('delete id error: ', error);
+        });
+};
+
+// [delete] /todos/
+export const deleteData = (req, res, next) => {
+    let data = req.body;
+    Todos.delete(data)
+        .then((result) => {
+            res.json(result.ok);
+        })
+        .catch((error) => {
+            console.log('delete complete error: ', error);
+        });
+};
+
+// [patch] /todos/
+export const update = (req, res, next) => {
+    let { query, data } = req.body;
+    Todos.update(query, { $set: data })
+        .then((result) => {
+            res.json(result.ok);
+        })
+        .catch((error) => {
+            console.log('delete complete error: ', error);
+        });
+    console.log(req.body);
+};
+
+// [get] /todos/
+export const get = (req, res, next) => {
+    let { query, data } = req.body;
+    Todos.update(query, { $set: data })
+        .then((result) => {
+            res.json(result.ok);
+        })
+        .catch((error) => {
+            console.log('delete complete error: ', error);
+        });
+    console.log(req.body);
 };
