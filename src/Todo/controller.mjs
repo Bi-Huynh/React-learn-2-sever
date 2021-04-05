@@ -4,7 +4,7 @@ import Todos from './todo.schema.mjs';
 export const getAll = async (req, res, next) => {
     let todos = [];
     try {
-        todos = await Todos.find({});
+        todos = await Todos.find({}).sort({ createdAt: -1 });
     } catch (error) {
         console.log(new Error(error));
     } finally {
