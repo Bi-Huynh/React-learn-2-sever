@@ -1,9 +1,11 @@
 import express from 'express';
 import methodOverride from 'method-override';
 import cors from 'cors';
+import fileUpload from 'express-fileupload';
 
 import * as Database from './config/db.js';
 import { router as todoRouter } from './src/Todo/index.mjs';
+import { router as musicRouter } from './src/Music/index.mjs';
 // import { router as homeRouter } from './src/Home';
 
 const app = express();
@@ -12,6 +14,8 @@ const port = 8080;
 Database.connect();
 
 app.use(cors());
+app.use(fileUpload());
+// app.use(express.static('public'));
 
 app.use(
     express.urlencoded({
@@ -29,6 +33,7 @@ app.use(methodOverride('_method'));
 // sử dụng nó để có thể sử dụng thư viện override dùng trong soft delete (xóa mềm => không xóa hẳng đi)
 
 app.use('/todos', todoRouter);
+app.use('/musics', musicRouter);
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);

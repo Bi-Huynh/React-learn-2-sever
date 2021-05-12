@@ -3,10 +3,12 @@ import * as todoController from './controller.mjs';
 
 const router = express.Router();
 
-router.get('/', todoController.getAll);
-router.post('/store', todoController.create);
-router.delete('/', todoController.deleteData);
-router.delete('/:id', todoController.deleted);
-router.patch('/', todoController.update);
+router
+    .route('/')
+    .get(todoController.getAll)
+    .delete(todoController.deleteData)
+    .patch(todoController.update);
+router.route('/:id').delete(todoController.deleted);
+router.route('/store').post(todoController.create);
 
 export { router };
