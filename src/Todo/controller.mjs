@@ -1,74 +1,132 @@
 import Todos from './todo.schema.mjs';
 
 // [get] /todos
-export const getAll = async (req, res, next) => {
+const getAll = async (req, res) => {
+    let fillter = { ...req.query };
     let todos = [];
     try {
-        todos = await Todos.find({}).sort({ createdAt: -1 });
+        todos = await Todos.find(fillter).sort({ createdAt: -1 });
+        if (!todos) {
+            res.stauts(500).json({
+                success: false,
+                message: 'Error function getAll Todos',
+                error: "can't return result get Todos",
+            });
+            return;
+        }
+        res.status(200).json({ success: true, data: todos });
     } catch (error) {
-        console.log(new Error(error));
-    } finally {
-        res.json(todos);
+        res.stauts(500).json({
+            success: false,
+            message: 'Error function getAll Todos',
+            error,
+        });
     }
 };
 
 // [post] /todos/store
-export const create = (req, res, next) => {
+const create = async (req, res) => {
     let todo = { ...req.body };
 
-    Todos.create(todo)
-        .then((result) => {
-            res.json(result);
-        })
-        .catch((error) => console.log('create new todo error: ', error));
+    try {
+        if (!todo.content || todo.content === '')
+            throw "content todo don't undefine or empty";
+
+        let result = await Todos.create(todo);
+        if (!result) {
+            res.status(500).json({
+                success: false,
+                message: 'Error function create Course',
+                error: `can't create new todo`,
+            });
+            return;
+        }
+
+        res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'Error function create Course',
+            error,
+        });
+    }
 };
 
 // [delete] /todos/:id
-export const deleted = (req, res, next) => {
-    let _id = req.params.id;
-    Todos.deleteById(_id)
-        .then((result) => {
-            res.json(result.ok);
-        })
-        .catch((error) => {
-            console.log('delete id error: ', error);
+const deleted = async (req, res) => {
+    let { id: _id } = req.params;
+
+    try {
+        if (!_id || _id === '') throw "id todo don't undefine or empty";
+
+        let result = await Todos.deleteById(_id);
+        if (!result) {
+            res.status(500).json({
+                success: false,
+                message: 'Error function deleted Course',
+                error: `can't deleted todo`,
+            });
+            return;
+        }
+
+        res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'Error function create Course',
+            error,
         });
+    }
 };
 
 // [delete] /todos/
-export const deleteData = (req, res, next) => {
-    let data = req.body;
-    Todos.delete(data)
-        .then((result) => {
-            res.json(result.ok);
-        })
-        .catch((error) => {
-            console.log('delete complete error: ', error);
+const deleteData = async (req, res) => {
+    let data = { ...req.body };
+
+    try {
+        let result = await Todos.delete(data);
+        if (!result) {
+            res.status(500).json({
+                success: false,
+                message: 'Error function deleteData Course',
+                error: `can't deleteData todo`,
+            });
+            return;
+        }
+
+        res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'Error function deleteData Course',
+            error,
         });
+    }
 };
 
 // [patch] /todos/
-export const update = (req, res, next) => {
+const update = async (req, res) => {
     let { query, data } = req.body;
-    Todos.update(query, { $set: data })
-        .then((result) => {
-            res.json(result.ok);
-        })
-        .catch((error) => {
-            console.log('delete complete error: ', error);
+
+    try {
+        let result = await Todos.updata(query, { $set: data });
+        if (!result) {
+            res.status(500).json({
+                success: false,
+                message: 'Error function update Course',
+                error: `result update todo undefind`,
+            });
+            return;
+        }
+
+        res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'Error function update Course',
+            error,
         });
-    console.log(req.body);
+    }
 };
 
-// [get] /todos/
-export const get = (req, res, next) => {
-    let { query, data } = req.body;
-    Todos.update(query, { $set: data })
-        .then((result) => {
-            res.json(result.ok);
-        })
-        .catch((error) => {
-            console.log('delete complete error: ', error);
-        });
-    console.log(req.body);
-};
+export { getAll, create, deleted, deleteData, update };
